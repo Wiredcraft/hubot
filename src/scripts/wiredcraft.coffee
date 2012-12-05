@@ -7,7 +7,7 @@
 
 module.exports = (robot) ->
   robot.respond /WHEN IS LUNCH TIME/i, (msg) ->
-  	meg.send 'PM 1:30'
+  	msg.send 'PM 1:30'
 
   robot.respond /WHERE TO GO LUNCH$/i, (msg) ->
     msg.send 'GO Malatang'
