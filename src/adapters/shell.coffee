@@ -5,16 +5,16 @@ Adapter       = require '../adapter'
 {TextMessage} = require '../message'
 
 class Shell extends Adapter
-  send: (user, strings...) ->
+  send: (envelope, strings...) ->
     unless process.platform is 'win32'
       console.log "\x1b[01;32m#{str}\x1b[0m" for str in strings
     else
       console.log "#{str}" for str in strings
     @repl.prompt()
 
-  reply: (user, strings...) ->
-    strings = strings.map (s) -> "#{user.name}: #{s}"
-    @send user, strings...
+  reply: (envelope, strings...) ->
+    strings = strings.map (s) -> "#{envelope.user.name}: #{s}"
+    @send envelope.user, strings...
 
   run: ->
     self = @
@@ -35,7 +35,7 @@ class Shell extends Adapter
       @repl.close() if buffer.toLowerCase() is 'exit'
       @repl.prompt()
       user = @userForId '1', name: 'Shell', room: 'Shell'
-      @receive new TextMessage user, buffer
+      @receive new TextMessage user, buffer, 'messageId'
 
     self.emit 'connected'
 

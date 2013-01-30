@@ -6,17 +6,17 @@ Adapter                                 = require '../adapter'
 {TextMessage,EnterMessage,LeaveMessage} = require '../message'
 
 class Campfire extends Adapter
-  send: (user, strings...) ->
+  send: (envelope, strings...) ->
     if strings.length > 0
-      @bot.Room(user.room).speak strings.shift(), (err, data) =>
+      @bot.Room(envelope.room).speak strings.shift(), (err, data) =>
         @robot.logger.error "Campfire error: #{err}" if err?
-        @send user, strings...
+        @send envelope.user, strings...
 
-  reply: (user, strings...) ->
-    @send user, strings.map((str) -> "#{user.name}: #{str}")...
+  reply: (envelope, strings...) ->
+    @send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
 
-  topic: (user, strings...) ->
-    @bot.Room(user.room).topic strings.join(" / "), (err, data) =>
+  topic: (envelope, strings...) ->
+    @bot.Room(envelope.room).topic strings.join(" / "), (err, data) =>
       @robot.logger.error "Campfire error: #{err}" if err?
 
   run: ->
@@ -40,15 +40,15 @@ class Campfire extends Adapter
 
     bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
       unless bot.info.id == author.id
-        self.receive new TextMessage(author, body)
+        self.receive new TextMessage(author, body, id)
 
     bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
       unless bot.info.id == author.id
-        self.receive new EnterMessage(author)
+        self.receive new EnterMessage(author, null, id)
 
     bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
       unless bot.info.id == author.id
-        self.receive new LeaveMessage(author)
+        self.receive new LeaveMessage(author, null, id)
 
     bot.Me (err, data) ->
       bot.info = data.user
@@ -73,7 +73,7 @@ exports.use = (robot) ->
 class CampfireStreaming extends EventEmitter
   constructor: (options, @robot) ->
     unless options.token? and options.rooms? and options.account?
-      @robot.logger.error "Not enough parameters provided. I Need a token, rooms and account"
+      @robot.logger.error "Not enough parameters provided. I need a token, rooms and account"
       process.exit(1)
 
     @token         = options.token
@@ -96,7 +96,7 @@ class CampfireStreaming extends EventEmitter
     logger = @robot.logger
 
     show: (callback) ->
-      self.post "/room/#{id}", "", callback
+      self.get "/room/#{id}", callback
 
     join: (callback) ->
       self.post "/room/#{id}/join", "", callback
