@@ -65,13 +65,13 @@ module.exports = (robot) ->
 
     msg.send emit
 
-  robot.router.get '/hubot/help', (req, res) ->
-    cmds = robot.helpCommands().map (cmd) ->
-      cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  # robot.router.get '/hubot/help', (req, res) ->
+  #   cmds = robot.helpCommands().map (cmd) ->
+  #     cmd.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 
-    emit = "<p>#{cmds.join '</p><p>'}</p>"
+  #   emit = "<p>#{cmds.join '</p><p>'}</p>"
 
-    emit = emit.replace /hubot/ig, "<b>#{robot.name}</b>"
+  #   emit = emit.replace /hubot/ig, "<b>#{robot.name}</b>"
 
-    res.setHeader 'content-type', 'text/html'
-    res.end helpContents robot.name, emit
+  #   res.setHeader 'content-type', 'text/html'
+  #   res.end helpContents robot.name, emit
