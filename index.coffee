@@ -21,4 +21,4 @@ module.exports = {
 }
 
 module.exports.loadBot = (adapterPath, adapterName, enableHttpd, botName) ->
-  new Robot adapterPath, adapterName, enableHttpd, botName
+  new Robot adapterPath, adapterName, false, botName
